@@ -7,6 +7,7 @@ from schema import UserCreate, UserLogin, PostCreate
 app = FastAPI()
 
 
+
 @app.post("/signup")
 def signup(user_data: UserCreate, db: Session = Depends(get_db)):
     service = UserService(db)
@@ -23,7 +24,7 @@ def login(user_data: UserLogin, db: Session = Depends(get_db)):
 
 
 @app.post("/addpost")
-def add_post(post_data: PostCreate, token: str, db: Session = Depends(get_db)):
+def add_post(post_data: PostCreate, token: str = Depends(AuthService.validate_token), db: Session = Depends(get_db)):
     # Simulating token verification (in production, use a proper method)
     user_id = 1  # Assume token maps to user ID 1
     service = PostService(db)
@@ -31,14 +32,14 @@ def add_post(post_data: PostCreate, token: str, db: Session = Depends(get_db)):
 
 
 @app.get("/getposts")
-def get_posts(token: str, db: Session = Depends(get_db)):
+def get_posts(token: str = Depends(AuthService.validate_token), db: Session = Depends(get_db)):
     user_id = 1  # Simulating token authentication
     service = PostService(db)
     return service.get_posts(user_id)
 
 
 @app.delete("/deletepost")
-def delete_post(post_id: int, token: str, db: Session = Depends(get_db)):
+def delete_post(post_id: int, token: str = Depends(AuthService.validate_token), db: Session = Depends(get_db)):
     user_id = 1  # Simulating token authentication
     service = PostService(db)
     try:
